@@ -139,4 +139,3 @@ while t<Tmax
 end
 figure
 imagesc(cMap)
-TestAccIndianPine
