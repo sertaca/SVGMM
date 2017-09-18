@@ -54,13 +54,8 @@ Kmax = length(labelGT);
 GTN = [ImGT.Npix];
 % Choose number of of training samples per class
 Nper = 10*ones(Kmax,1);
-% Set the Nper to min(Nper, GTN/2)
-for i=1:length(Nper)
-    if Nper(i) > GTN(i) / 2
-        Nper(i) = GTN(i) / 2;
-    end
-end
-
+% Set the Nper to 10 for small classes
+Nper(GTN<100) = 10;
 Ntrain = sum(Nper);
 ftrain = zeros(Ntrain,LL);
 strain = 0;
@@ -106,7 +101,12 @@ end
 
 % Get the initial classification map by classifying the pixels
 % independently
-[LandClass,cMap] = hsiGMMLandClassIni(f,Theta,labelGT,M,N,Index);
+[maxProb ind] = max(wa,[],2);
+cMap = zeros(M,N);
+for k=labelGT
+    LandClass(k).index = find(ind==k);
+    cMap(Index(LandClass(k).index)) = k;
+end
 
 bet = 1; % smoothing parameter
 Ws = 13; % Window size
@@ -139,3 +139,4 @@ while t<Tmax
 end
 figure
 imagesc(cMap)
+TestAccIndianPine
